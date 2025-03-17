@@ -1,4 +1,4 @@
 ---
-title: Welcome to my blog
+gafferbee's adventures in github
 ---
 
