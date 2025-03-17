@@ -146,7 +146,7 @@
 <body>
     <div class="header">
         <h1>When Will Barnet Win the National League?</h1>
-        <img class="logo" src="/api/placeholder/80/80" alt="Barnet FC Crest">
+        <img class="logo" src="barnet-crest.png" alt="Barnet FC Crest">
     </div>
     
     <div class="summary" id="summary">
