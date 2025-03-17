@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>When Will Barnet Win the National League?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #cc7a00; /* Deeper amber color */
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            margin-right: 15px;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+        }
+        .summary {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .calculator {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #e65c00;
+        }
+        .competitors {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        .competitor {
+            display: flex;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        .competitor input[type="text"] {
+            width: 40%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .competitor input[type="number"] {
+            width: 25%;
+        }
+        .competitor button {
+            background-color: #ff3333;
+            padding: 5px 10px;
+            margin-top: 0;
+        }
+        .competitor button:hover {
+            background-color: #e60000;
+        }
+        .add-competitor {
+            background-color: #4CAF50;
+            width: 100%;
+        }
+        .add-competitor:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 5px solid #ff6600;
+        }
+        .results h2 {
+            margin-top: 0;
+            color: #ff6600;
+        }
+        .results p {
+            line-height: 1.6;
+        }
+        .barnet-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .barnet-stat {
+            text-align: center;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            width: 30%;
+        }
+        .barnet-stat h3 {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .barnet-stat p {
+            margin: 5px 0 0;
+            font-size: 22px;
+            font-weight: bold;
+            color: #ff6600;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>When Will Barnet Win the National League?</h1>
+        <img class="logo" src="/api/placeholder/80/80" alt="Barnet FC Crest">
+    </div>
+    
+    <div class="summary" id="summary">
+        Calculating Barnet's path to National League victory...
+    </div>
+    
+    <div class="calculator">
+        <div class="form-group">
+            <label for="barnetPoints">Barnet's Current Points:</label>
+            <input type="number" id="barnetPoints" min="0" value="85">
+        </div>
+        
+        <div class="form-group">
+            <label for="barnetMatchesLeft">Barnet's Remaining Matches:</label>
+            <input type="number" id="barnetMatchesLeft" min="0" value="8">
+        </div>
+        
+        <div class="competitors">
+            <h2>Competitors</h2>
+            <div id="competitorsList">
+                <!-- Competitors will be added here -->
+            </div>
+            <button class="add-competitor" onclick="addCompetitor()">+ Add Competitor</button>
+        </div>
+        
+        <button onclick="calculateResults()">Calculate</button>
+        
+        <div class="results" id="results">
+            <h2>Results</h2>
+            <div class="barnet-stats">
+                <div class="barnet-stat">
+                    <h3>Points Needed</h3>
+                    <p id="pointsNeeded">-</p>
+                </div>
+                <div class="barnet-stat">
+                    <h3>Wins Needed</h3>
+                    <p id="winsNeeded">-</p>
+                </div>
+                <div class="barnet-stat">
+                    <h3>Max Possible Points</h3>
+                    <p id="maxPoints">-</p>
+                </div>
+            </div>
+            <p id="explanation"></p>
+        </div>
+    </div>
+
+    <script>
+        // Default competitors
+        const defaultCompetitors = [
+            { name: "York", points: 74, matchesLeft: 9 },
+            { name: "Forest Green", points: 72, matchesLeft: 8 },
+            { name: "Oldham", points: 63, matchesLeft: 8 }
+        ];
+        
+        // Initialize competitors list
+        window.onload = function() {
+            defaultCompetitors.forEach(competitor => {
+                createCompetitorElement(competitor.name, competitor.points, competitor.matchesLeft);
+            });
+            calculateResults();
+        };
+        
+        function createCompetitorElement(name, points, matchesLeft) {
+            const competitorsList = document.getElementById('competitorsList');
+            const competitorDiv = document.createElement('div');
+            competitorDiv.className = 'competitor';
+            
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.className = 'competitor-name';
+            nameInput.placeholder = 'Team Name';
+            nameInput.value = name || '';
+            
+            const pointsInput = document.createElement('input');
+            pointsInput.type = 'number';
+            pointsInput.className = 'competitor-points';
+            pointsInput.placeholder = 'Points';
+            pointsInput.min = '0';
+            pointsInput.value = points || 0;
+            
+            const matchesInput = document.createElement('input');
+            matchesInput.type = 'number';
+            matchesInput.className = 'competitor-matches';
+            matchesInput.placeholder = 'Matches Left';
+            matchesInput.min = '0';
+            matchesInput.value = matchesLeft || 0;
+            
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = function() {
+                competitorsList.removeChild(competitorDiv);
+            };
+            
+            competitorDiv.appendChild(nameInput);
+            competitorDiv.appendChild(pointsInput);
+            competitorDiv.appendChild(matchesInput);
+            competitorDiv.appendChild(removeButton);
+            
+            competitorsList.appendChild(competitorDiv);
+        }
+        
+        function addCompetitor() {
+            createCompetitorElement();
+        }
+        
+        function getCompetitorsData() {
+            const competitors = [];
+            const competitorElements = document.querySelectorAll('.competitor');
+            
+            competitorElements.forEach(element => {
+                const name = element.querySelector('.competitor-name').value;
+                const points = parseInt(element.querySelector('.competitor-points').value) || 0;
+                const matchesLeft = parseInt(element.querySelector('.competitor-matches').value) || 0;
+                
+                if (name.trim() !== '') {
+                    competitors.push({ name, points, matchesLeft });
+                }
+            });
+            
+            return competitors;
+        }
+        
+        function calculatePointsNeeded(params) {
+            const { barnetPoints, barnetMatchesLeft, competitors } = params;
+            
+            // Calculate maximum possible points for each competitor
+            const competitorsMaxPoints = competitors.map(comp => {
+                return {
+                    name: comp.name,
+                    currentPoints: comp.points,
+                    maxPossiblePoints: comp.points + (comp.matchesLeft * 3),
+                    matchesLeft: comp.matchesLeft
+                };
+            });
+            
+            // Sort competitors by max possible points (descending)
+            competitorsMaxPoints.sort((a, b) => b.maxPossiblePoints - a.maxPossiblePoints);
+            
+            // Calculate Barnet's max possible points
+            const barnetMaxPoints = barnetPoints + (barnetMatchesLeft * 3);
+            
+            // Find the most threatening competitor
+            const topCompetitor = competitorsMaxPoints[0] || { name: "None", currentPoints: 0, maxPossiblePoints: 0, matchesLeft: 0 };
+            
+            // Calculate minimum points needed to guarantee winning
+            const pointsNeeded = Math.max(0, topCompetitor.maxPossiblePoints + 1 - barnetPoints);
+            
+            // Calculate minimum wins needed (assuming no draws)
+            const winsNeeded = Math.ceil(pointsNeeded / 3);
+            
+            // Check if it's mathematically possible
+            const isPossible = winsNeeded <= barnetMatchesLeft;
+            
+            // Check if already guaranteed
+            const alreadyGuaranteed = pointsNeeded <= 0;
+            
+            // Generate explanation
+            let explanation = "";
+            let summary = "";
+            
+            if (alreadyGuaranteed) {
+                explanation = `Barnet has already secured enough points to win the National League! With ${barnetPoints} points and ${barnetMatchesLeft} matches remaining, no competitor can catch up.`;
+                summary = "Barnet has already won the National League! No competitor can catch up.";
+            } else if (!isPossible) {
+                explanation = `Unfortunately, it's mathematically impossible for Barnet to win the league. Even winning all remaining ${barnetMatchesLeft} matches would give them ${barnetMaxPoints} points, which is not enough to surpass ${topCompetitor.name}'s maximum possible ${topCompetitor.maxPossiblePoints} points.`;
+                summary = "Unfortunately, it's mathematically impossible for Barnet to win the league this season.";
+            } else {
+                explanation = `Barnet currently has ${barnetPoints} points with ${barnetMatchesLeft} matches remaining.\n\n`;
+                explanation += `The closest competitor is ${topCompetitor.name} with ${topCompetitor.currentPoints} points and ${topCompetitor.matchesLeft} matches left (maximum possible: ${topCompetitor.maxPossiblePoints} points).\n\n`;
+                explanation += `To guarantee winning the league, Barnet needs ${pointsNeeded} more points, which means winning at least ${winsNeeded} of their remaining ${barnetMatchesLeft} matches.`;
+                summary = `Barnet haven't won the National League yet, but they only need ${pointsNeeded} points from ${barnetMatchesLeft} games.`;
+                
+                if (winsNeeded < barnetMatchesLeft) {
+                    explanation += `\n\nThis means Barnet can afford to drop points in up to ${barnetMatchesLeft - winsNeeded} matches (either through losses or draws).`;
+                }
+            }
+            
+            return {
+                barnetCurrentPoints: barnetPoints,
+                barnetMaxPossiblePoints: barnetMaxPoints,
+                topCompetitor: topCompetitor.name,
+                topCompetitorCurrentPoints: topCompetitor.currentPoints,
+                topCompetitorMaxPoints: topCompetitor.maxPossiblePoints,
+                pointsNeeded: pointsNeeded,
+                winsNeeded: winsNeeded,
+                isPossible: isPossible,
+                alreadyGuaranteed: alreadyGuaranteed,
+                explanation: explanation,
+                summary: summary
+            };
+        }
+        
+        function calculateResults() {
+            const barnetPoints = parseInt(document.getElementById('barnetPoints').value) || 0;
+            const barnetMatchesLeft = parseInt(document.getElementById('barnetMatchesLeft').value) || 0;
+            const competitors = getCompetitorsData();
+            
+            const params = {
+                barnetPoints,
+                barnetMatchesLeft,
+                competitors
+            };
+            
+            const result = calculatePointsNeeded(params);
+            
+            // Update the results display
+            document.getElementById('pointsNeeded').textContent = result.pointsNeeded;
+            document.getElementById('winsNeeded').textContent = result.winsNeeded;
+            document.getElementById('maxPoints').textContent = result.barnetMaxPossiblePoints;
+            document.getElementById('explanation').innerHTML = result.explanation.replace(/\n\n/g, '<br><br>');
+            document.getElementById('summary').textContent = result.summary;
+        }
+    </script>
+</body>
+</html>
